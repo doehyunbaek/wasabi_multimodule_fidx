@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAssembly Example</title>
+</head>
+
+<body>
+    <h1>WebAssembly Example</h1>
+    <script>
+        async function loadWasm() {
+            // Fetch and compile the first .wat file
+            const response1 = await fetch('module1.wasm');
+            const buffer1 = await response1.arrayBuffer();
+            const instance1 = await WebAssembly.instantiate(buffer1);
+
+            // // Fetch and compile the second .wat file
+            const response2 = await fetch('module2.wasm');
+            const buffer2 = await response2.arrayBuffer();
+            const instance2 = await WebAssembly.instantiate(buffer2, {
+                env: {
+                    shared_func: instance1.instance.exports.shared_func
+                }
+            });
+
+            // Call the function in the second module
+            instance2.instance.exports.call_indirect_func();
+        }
+
+        loadWasm();
+    </script>
+</body>
+
+</html>
